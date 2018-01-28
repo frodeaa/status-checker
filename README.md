@@ -7,6 +7,8 @@ endpoints
 The result is save to AWS CloudWatch, where you can use
 the result to trigger other events.
 
+![](images/aws-console.png)][Cloudwatch example]
+
 ## Getting Started
 
 status-checker is configured by providing a JSON list of objects
