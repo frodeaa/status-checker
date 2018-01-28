@@ -121,7 +121,6 @@ module.exports.check = (event, context, callback) => {
     });
 
     const wait = () => {
-      console.log(Object.keys(outputs).length, endpoints.length);
       if (Object.keys(outputs).length < endpoints.length) {
         setTimeout(wait, 100);
         return;
