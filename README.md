@@ -7,7 +7,7 @@ endpoints
 The result is save to AWS CloudWatch, where you can use
 the result to trigger other events.
 
-![](images/aws-console.png)][Cloudwatch example]
+![Cloudwatch example](images/aws-console.png)
 
 ## Getting Started
 
