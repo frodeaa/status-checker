@@ -1,0 +1,20 @@
+{
+  "name": "status-ping",
+  "version": "0.0.1",
+  "description": "Check status of URLs, create AWS Cloudfront metrics from the result.",
+  "main": "handler.js",
+  "repository": "git@github.com:frodeaa/status-ping.git",
+  "author": "Frode Aannevik",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.188.0",
+    "eslint": "^4.16.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "request": "^2.83.0",
+    "serverless": "^1.25.0"
+  }
+}
