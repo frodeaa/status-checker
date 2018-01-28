@@ -19,7 +19,7 @@ provider:
             - Ref: "AWS::Region"
             - Ref: "AWS::AccountId"
             - parameter/services/status-checker/endpoints_base64
-    - Effect: "Allow"
+    - Effect: Allow
       Action: kms:Decrypt
       Resource:
         Fn::Join:
