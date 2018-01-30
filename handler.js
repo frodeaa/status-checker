@@ -2,42 +2,52 @@
 const AWS = require('aws-sdk');
 const request = require('request');
 
+const metric = (name, dimensions, sum) => ({
+  MetricName: name,
+  Dimensions: dimensions,
+  StatisticValues: {
+    SampleCount: 1,
+    Sum: sum,
+    Minimum: 0,
+    Maximum: 1000,
+  },
+  Unit: 'None',
+});
+
 const asMetricData = (output) => {
   const dimensions = [{
-    Name: 'endpoint',
+    Name: 'Endpoint',
     Value: output.endpoint,
   },
   {
-    Name: 'method',
+    Name: 'Method',
     Value: output.method,
-  }
+  }];
+
+  const status = output.status_code;
+  const metricData = [
+    metric('HTTPCode', dimensions, status),
+    {
+      MetricName: 'Latency',
+      Dimensions: dimensions,
+      StatisticValues: {
+        SampleCount: 1,
+        Sum: output.duration_ms,
+        Minimum: 0,
+        Maximum: 30000,
+      },
+      Unit: 'Milliseconds',
+    },
   ];
+
+  if (status < 1000 && status > 99) {
+    const suffix = `${status}`.replace(/(\d{2}$)/, 'XX');
+    metricData.push(metric(`HTTPCode_${suffix}`, dimensions, 1));
+  }
+
   return {
     Namespace: 'status-checker/HTTP',
-    MetricData: [
-      {
-        MetricName: 'status_code',
-        Dimensions: dimensions,
-        StatisticValues: {
-          SampleCount: 1,
-          Sum: output.status_code,
-          Minimum: 0,
-          Maximum: 1000,
-        },
-        Unit: 'None',
-      },
-      {
-        MetricName: 'latency',
-        Dimensions: dimensions,
-        StatisticValues: {
-          SampleCount: 1,
-          Sum: output.duration_ms,
-          Minimum: 0,
-          Maximum: 30000,
-        },
-        Unit: 'Milliseconds',
-      },
-    ],
+    MetricData: metricData,
   };
 };
 
@@ -49,7 +59,7 @@ const checkEndpoint = (endpoint, callback) => {
   }
   options.headers['User-Agent'] = 'status-checker';
   options.time = true;
-  options.method = options.method || 'GET'
+  options.method = options.method || 'GET';
 
   request(options, (error, response) => {
     const output = {
