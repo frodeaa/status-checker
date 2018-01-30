@@ -9,6 +9,16 @@ the result to trigger other events.
 
 ![Cloudwatch example](images/aws-console.png)
 
+Following metrics are pushed to AWS CloudWatch using
+namespace `status-checker/HTTP` and dimension `Endpoint`
+and `Method`.
+
+| MetricName   | Description            | Unit         |
+| ------------ | ---------------------- | ------------:|
+| Latency      | request time           | Milliseconds |
+| HTTPCode     | HTTP status code       | None         |
+| HTTPCode_YXX | Number of 2XX, 3XX,... | None         |
+
 ## Getting Started
 
 status-checker is configured by providing a JSON list of objects
@@ -55,12 +65,14 @@ $(yarn/bin) serverless deploy --stage prod --region eu-west-1
 The metrics can be view in AWS console or by querying using aws
 
 ```
-aws cloudwatch get-metric-statistics\
-   --metric-name latency
-   --start-time <> --end-time <> --period 60 \
-   --statistics Average
+aws cloudwatch get-metric-statistics \
+   --metric-name Latency \
+   --start-time 2018-01-30T20:00:00 \
+   --end-time 2018-01-30T23:00:00 \
+   --period 60 \
+   --statistics Average \
    --namespace status-checker/HTTP \
-   --dimensions Name=method,Value=GET,Name=endpoint,Value=http://example.com
+   --dimensions Name=Method,Value=GET,Name=Endpoint,Value=http://example.com
 {
     "Datapoints": [
         {
@@ -79,6 +91,8 @@ aws cloudwatch get-metric-statistics\
             "Unit": "Milliseconds"
         }
     ],
-    "Label": "latency"
+    "Label": "Latency"
 }
 ```
+
+
