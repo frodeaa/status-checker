@@ -4,7 +4,7 @@ status-checker is a small service which checks
 the HTTP status code and latency for one or more
 endpoints
 
-The result is save to AWS CloudWatch, where you can use
+The result is saved to AWS CloudWatch, where you can use
 the result to trigger other events.
 
 ![Cloudwatch example](images/aws-console.png)
@@ -24,7 +24,7 @@ and `Method`.
 status-checker is configured by providing a JSON list of objects
 with following properties.
 
- - `url`: fully qualified uri
+ - `url`: fully qualified URI, the endpoint to check
  - `method`: http method (default: "GET")
  - `headers` - http headers (default: {})
 
