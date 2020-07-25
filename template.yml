@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Check status of endpoints
+
+Resources:
+  StatusChecker:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: handler.check
+      Runtime: nodejs10.x
+      Timeout: 900
+      Environment:
+        Variables:
+          ENDPOINTS_BASE64_SSM_KEY: /services/status-checker/endpoints_base64
+      Policies:
+        - CloudWatchPutMetricPolicy: {}
+        - SSMParameterReadPolicy:
+            ParameterName: "services/status-checker/*"
+
+  StatusCheckerEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: "cron(*/5 * * * ? *)"
+      Targets:
+        - Arn: !GetAtt StatusChecker.Arn
+          Id: StatusCheckerScheduler
+
+  StatusCheckerInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt StatusChecker.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt StatusCheckerEventRule.Arn

@@ -55,11 +55,20 @@ aws ssm put-parameter \
 
 ### Installing
 
-The application can be deployed with the Serverless Framework. For example, to deploy a `prod` instance to `eu-west`:
+The application can be deployed with aws cloudformation.
 
 ```
-yarn install
-$(yarn/bin) serverless deploy --stage prod --region eu-west-1
+yarn install --production
+
+aws cloudformation package \
+    --template-file template.yml \
+    --output-template-file deploy-template.yml \
+    --s3-bucket "${BUCKET}"
+
+aws cloudformation deploy \
+    --capabilities CAPABILITY_IAM \
+    --template-file deploy-template.yml \
+    --stack-name status-checker
 ```
 
 The metrics can be view in AWS console or by querying using aws
