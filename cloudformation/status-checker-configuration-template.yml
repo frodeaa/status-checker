@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Check status configuration
+
+Parameters:
+  StatusCheckerName:
+    Type: String
+
+  StatusCheckerConfiguration:
+    Type: String
+    NoEcho: true
+    Description: |
+      base64 encoded JSON configuration for status-checker
+
+  StatusCheckerScheduleExpression:
+    Type: String
+    Default: "cron(*/5 * * * ? *)"
+
+  StatusCheckerStackName:
+    Type: String
+    Default: status-checker
+
+Resources:
+  StatusCheckerConfigurationParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /status-checker/${StatusCheckerName}
+      Value: !Ref StatusCheckerConfiguration
+
+  StatusCheckerEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub ${StatusCheckerStackName}-${StatusCheckerName}
+      ScheduleExpression: !Ref StatusCheckerScheduleExpression
+      Targets:
+        - Arn:
+            Fn::ImportValue:
+              !Sub ${StatusCheckerStackName}-StatusChecker
+          Id: StatusCheckerScheduler
+          Input: !Sub |
+            {
+              "parameter": "/status-checker/${StatusCheckerName}"
+            }
+
+  StatusCheckerEventRuleInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::ImportValue:
+          !Sub ${StatusCheckerStackName}-StatusChecker
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt StatusCheckerEventRule.Arn

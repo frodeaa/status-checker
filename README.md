@@ -38,21 +38,6 @@ with following properties.
 ]
 ```
 
-### Prerequisites
-
-Add endpoint configuration to SSM, (`/services/status-checker/endpoints_base64`).
-
-```
-endpoints=$(cat <<EOF | base64
-[{"url":"http://example.com"}]
-EOF
-)
-
-aws ssm put-parameter \
-  --name '/services/status-checker/endpoints_base64' \
-  --type "SecureString" --value "${endpoints}"
-```
-
 ### Installing
 
 The application can be deployed with aws cloudformation.
@@ -61,14 +46,37 @@ The application can be deployed with aws cloudformation.
 yarn install --production
 
 aws cloudformation package \
-    --template-file template.yml \
-    --output-template-file deploy-template.yml \
+    --template-file cloudformation/status-checker-template.yml \
+    --output-template-file /tmp/deploy-status-checker-template.yml \
     --s3-bucket "${BUCKET}"
 
 aws cloudformation deploy \
     --capabilities CAPABILITY_IAM \
-    --template-file deploy-template.yml \
+    --template-file /tmp/deploy-status-checker-template.yml \
     --stack-name status-checker
+```
+
+#### Configure status checker
+
+Add one or more URLs to check using the status-checker.
+
+```
+configuration=$(cat <<EOF | base64
+[
+  {
+    "url": "http://example.com"
+  }
+]
+EOF
+)
+
+aws cloudformation create-stack \
+    --stack-name status-checker-example-com \
+    --template-body file://cloudformation/status-checker-configuration-template.yml \
+    --parameters \
+        "ParameterKey=StatusCheckerStackName,ParameterValue=status-checker" \
+        "ParameterKey=StatusCheckerName,ParameterValue=example-com" \
+        "ParameterKey=StatusCheckerConfiguration,ParameterValue=${configuration}"
 ```
 
 The metrics can be view in AWS console or by querying using aws

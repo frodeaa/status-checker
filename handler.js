@@ -108,12 +108,11 @@ const getEndpoints = keyName =>
     }
   });
 
-module.exports.check = (event, context, callback) => {
+module.exports.check = (event, _, callback) => {
   const outputs = {};
   const cloudwatch = new AWS.CloudWatch();
-  const ssmKey = process.env.ENDPOINTS_BASE64_SSM_KEY;
-
-  getEndpoints(ssmKey).then((endpoints) => {
+  console.log(event);
+  getEndpoints(event.parameter).then((endpoints) => {
     endpoints.forEach((endpoint) => {
       checkEndpoint(endpoint, (result) => {
         const params = asMetricData(result);
