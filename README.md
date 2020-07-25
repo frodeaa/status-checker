@@ -58,7 +58,7 @@ aws cloudformation deploy \
 
 #### Configure status checker
 
-Setup the status checker for and url by creating a configuration stack
+Setup the status checker for an URL by creating a configuration stack
 
 ```
 configuration=$(cat <<EOF | base64
@@ -80,9 +80,11 @@ aws cloudformation create-stack \
 ```
 
 > The default schedule is every 5 minutes. It can be changed by using the
-> `StatusCheckerScheduleExpression` parameter
+> `StatusCheckerScheduleExpression` parameter.
 
-The metrics can be view in AWS console or by querying using aws
+### View metrics
+
+The metrics can be view in AWS console or by querying using `aws`.
 
 ```
 aws cloudwatch get-metric-statistics \
@@ -111,5 +113,3 @@ aws cloudwatch get-metric-statistics \
     ]
 }
 ```
-
-
