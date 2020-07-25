@@ -58,7 +58,7 @@ aws cloudformation deploy \
 
 #### Configure status checker
 
-Add one or more URLs to check using the status-checker.
+Setup the status checker for and url by creating a configuration stack
 
 ```
 configuration=$(cat <<EOF | base64
@@ -79,36 +79,36 @@ aws cloudformation create-stack \
         "ParameterKey=StatusCheckerConfiguration,ParameterValue=${configuration}"
 ```
 
+> The default schedule is every 5 minutes. It can be changed by using the
+> `StatusCheckerScheduleExpression` parameter
+
 The metrics can be view in AWS console or by querying using aws
 
 ```
 aws cloudwatch get-metric-statistics \
-   --metric-name Latency \
-   --start-time 2018-01-30T20:00:00 \
-   --end-time 2018-01-30T23:00:00 \
-   --period 60 \
-   --statistics Average \
-   --namespace status-checker/HTTP \
-   --dimensions Name=Method,Value=GET,Name=Endpoint,Value=http://example.com
+    --metric-name Latency \
+    --start-time 2020-07-25T20:00:00 \
+    --end-time 2020-07-26T04:00:00 \
+    --period 60 \
+    --statistics Average \
+    --namespace status-checker/HTTP \
+    --dimensions \
+       'Name=Method,Value=GET' \
+       'Name=Endpoint,Value=http://example.com'
 {
+    "Label": "Latency",
     "Datapoints": [
         {
-            "Timestamp": "2018-01-28T20:26:00Z",
-            "Average": 148.87248999999997,
+            "Timestamp": "2020-07-25T21:55:00+00:00",
+            "Average": 249.07750599999986,
             "Unit": "Milliseconds"
         },
         {
-            "Timestamp": "2018-01-28T20:25:00Z",
-            "Average": 227.27127999999993,
-            "Unit": "Milliseconds"
-        },
-        {
-            "Timestamp": "2018-01-28T20:20:00Z",
-            "Average": 158.15730199999985,
+            "Timestamp": "2020-07-25T21:50:00+00:00",
+            "Average": 235.51812300000006,
             "Unit": "Milliseconds"
         }
-    ],
-    "Label": "Latency"
+    ]
 }
 ```
 
