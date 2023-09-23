@@ -1,3 +1,4 @@
-.serverless
 *.log
-deploy-template.yml
+node_modules
+dist
+coverage

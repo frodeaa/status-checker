@@ -13,20 +13,20 @@ Following metrics are pushed to AWS CloudWatch using
 namespace `status-checker/HTTP` and dimension `Endpoint`
 and `Method`.
 
-| MetricName   | Description            | Unit         |
-| ------------ | ---------------------- | ------------:|
+| MetricName   | Description            |         Unit |
+| :----------- | :--------------------- | -----------: |
 | Latency      | request time           | Milliseconds |
-| HTTPCode     | HTTP status code       | None         |
-| HTTPCode_YXX | Number of 2XX, 3XX,... | None         |
+| HTTPCode     | HTTP status code       |         None |
+| HTTPCode_YXX | Number of 2XX, 3XX,... |         None |
 
 ## Getting Started
 
 status-checker is configured by providing a JSON list of objects
 with following properties.
 
- - `url`: fully qualified URI, the endpoint to check
- - `method`: http method (default: "GET")
- - `headers` - http headers (default: {})
+-   `url`: fully qualified URI, the endpoint to check
+-   `method`: http method (default: "GET")
+-   `headers` - http headers (default: {})
 
 ### Example
 
@@ -43,7 +43,8 @@ with following properties.
 The application can be deployed with aws cloudformation.
 
 ```
-yarn install --production
+yarn install
+yarn build
 
 aws cloudformation package \
     --template-file cloudformation/status-checker-template.yml \
