@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Check status of endpoints
 
@@ -6,9 +6,9 @@ Resources:
   StatusChecker:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ..
+      CodeUri: ../dist
       Handler: handler.check
-      Runtime: nodejs10.x
+      Runtime: nodejs18.x
       Timeout: 900
       Policies:
         - CloudWatchPutMetricPolicy: {}

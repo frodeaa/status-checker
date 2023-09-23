@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Check status configuration
 
 Parameters:
@@ -34,8 +34,7 @@ Resources:
       ScheduleExpression: !Ref StatusCheckerScheduleExpression
       Targets:
         - Arn:
-            Fn::ImportValue:
-              !Sub ${StatusCheckerStackName}-StatusChecker
+            Fn::ImportValue: !Sub ${StatusCheckerStackName}-StatusChecker
           Id: StatusCheckerScheduler
           Input: !Sub |
             {
@@ -46,8 +45,7 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName:
-        Fn::ImportValue:
-          !Sub ${StatusCheckerStackName}-StatusChecker
+        Fn::ImportValue: !Sub ${StatusCheckerStackName}-StatusChecker
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt StatusCheckerEventRule.Arn
