@@ -110,12 +110,14 @@ export const checkEndpoint = async (
     options.signal = controller.signal;
 
     const timeoutId = setTimeout(() => controller.abort(), timeout);
+    let statusCode = -1;
     try {
         const response = await fetch(url, options);
+        statusCode = response.status;
         return {
             endpoint: options.url,
             method: options.method,
-            status_code: response.status,
+            status_code: statusCode,
             duration_ms: performance.now() - start,
         };
     } catch (err) {
@@ -128,7 +130,7 @@ export const checkEndpoint = async (
         };
     } finally {
         clearTimeout(timeoutId);
-        log(`checked ${options.method} ${options.url}`);
+        log(`checked ${options.method} ${options.url} ${statusCode}`);
     }
 };
 
