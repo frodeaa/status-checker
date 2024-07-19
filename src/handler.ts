@@ -66,7 +66,7 @@ export const asMetricData = (output: Output): PutMetricDataCommandInput => {
                 Minimum: 0,
                 Maximum: 30000,
             },
-            Unit: "Milliseconds",
+            Unit: "Milliseconds" as const,
         },
     ];
 
