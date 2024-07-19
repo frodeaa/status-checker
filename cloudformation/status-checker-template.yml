@@ -8,7 +8,7 @@ Resources:
     Properties:
       CodeUri: ../dist
       Handler: handler.check
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Timeout: 900
       Policies:
         - CloudWatchPutMetricPolicy: {}
