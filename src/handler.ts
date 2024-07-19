@@ -1,7 +1,7 @@
 import {
     CloudWatch,
-    MetricDatum,
-    PutMetricDataCommandInput,
+    type MetricDatum,
+    type PutMetricDataCommandInput,
 } from "@aws-sdk/client-cloudwatch";
 import { SSM } from "@aws-sdk/client-ssm";
 import type { Handler } from "aws-lambda";
@@ -96,7 +96,7 @@ export const putMetricData = async (output: Output) => {
 
 export const checkEndpoint = async (
     endpoint: Endpoint,
-    timeout: number = 10000,
+    timeout = 10000,
 ): Promise<Output> => {
     const defaultMethod = "GET";
     const options: Endpoint = JSON.parse(JSON.stringify(endpoint));
@@ -121,7 +121,7 @@ export const checkEndpoint = async (
     } catch (err) {
         return {
             endpoint: options.url,
-            method: options.method!,
+            method: options.method as string,
             status_code: 0,
             duration_ms: performance.now() - start,
             error_code: (err as Error).name,
@@ -139,7 +139,9 @@ export const endpointsFromSsm = async (name: string): Promise<Endpoint[]> => {
             WithDecryption: true,
         });
         return JSON.parse(
-            Buffer.from(result.Parameter!.Value!, "base64").toString("ascii"),
+            Buffer.from(result.Parameter?.Value as string, "base64").toString(
+                "ascii",
+            ),
         );
     } catch (error) {
         log("Failed to fetch endpoints from SSM", error);
