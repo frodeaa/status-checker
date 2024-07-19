@@ -1,8 +1,8 @@
-import * as handler from "../src/handler";
-import nock from "nock";
 import { CloudWatch } from "@aws-sdk/client-cloudwatch";
 import { SSM } from "@aws-sdk/client-ssm";
 import type { Context } from "aws-lambda";
+import nock from "nock";
+import * as handler from "../src/handler";
 
 jest.mock("@aws-sdk/client-cloudwatch", () => {
     const putMetricData = jest.fn();
