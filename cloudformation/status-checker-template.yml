@@ -3,13 +3,25 @@ Transform: AWS::Serverless-2016-10-31
 Description: Check status of endpoints
 
 Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}
+      RetentionInDays: 14
+
   StatusChecker:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Ref AWS::StackName
       CodeUri: ../dist
       Handler: handler.check
       Runtime: nodejs20.x
       Timeout: 900
+      LoggingConfig:
+        LogFormat: JSON
+        LogGroup: !Ref LogGroup
       Policies:
         - CloudWatchPutMetricPolicy: {}
         - SSMParameterReadPolicy:

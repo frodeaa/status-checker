@@ -90,8 +90,6 @@ aws cloudwatch get-metric-statistics \
 > You can use `make` to run build and testing
 
 ```
-make
-build lint test                run yarn scripts
-down up                        run docker compose commands
-end-to-end-tests               run end-to-end-tests
+build lint test e2e/test e2e/create-stacks yarn scripts
+down up                                    docker compose commands
 ```

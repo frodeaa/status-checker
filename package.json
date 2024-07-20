@@ -10,8 +10,9 @@
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
         "lint": "biome check",
-        "test": "jest --testPathIgnorePatterns=\"end-to-end-test\"",
-        "end-to-end-tests": "jest --testMatch=\"**/end-to-end-tests/**/*.test.ts\""
+        "test": "jest --testPathIgnorePatterns=\"e2e\"",
+        "e2e/test": "jest --testMatch=\"**/e2e/**/*.test.ts\"",
+        "e2e/create-stacks": "./e2e/scripts/create-stacks.sh"
     },
     "dependencies": {},
     "devDependencies": {
