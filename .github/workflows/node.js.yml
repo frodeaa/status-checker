@@ -15,4 +15,4 @@ jobs:
         with:
           node-version: "lts/*"
           cache: yarn
-      - run: make build lint test down end-to-end-tests
+      - run: make build lint test down end-to-end-tests end-to-end-tests/create-stacks
