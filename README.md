@@ -42,43 +42,13 @@ with following properties.
 
 The application can be deployed with aws cloudformation.
 
-```
-yarn install
-yarn build
-
-aws cloudformation package \
-    --template-file cloudformation/status-checker-template.yml \
-    --output-template-file /tmp/deploy-status-checker-template.yml \
-    --s3-bucket "${BUCKET}"
-
-aws cloudformation deploy \
-    --capabilities CAPABILITY_IAM \
-    --template-file /tmp/deploy-status-checker-template.yml \
-    --stack-name status-checker
-```
+https://github.com/frodeaa/status-checker/blob/05b5ff7a9fef16c6892ff7abe4fdbc2ea700a218/cloudformation/create-status-checker-stack.sh#L3-L11
 
 #### Configure status checker
 
 Setup the status checker for an URL by creating a configuration stack
 
-```
-configuration=$(cat <<EOF | base64
-[
-  {
-    "url": "http://example.com"
-  }
-]
-EOF
-)
-
-aws cloudformation create-stack \
-    --stack-name status-checker-example-com \
-    --template-body file://cloudformation/status-checker-configuration-template.yml \
-    --parameters \
-        "ParameterKey=StatusCheckerStackName,ParameterValue=status-checker" \
-        "ParameterKey=StatusCheckerName,ParameterValue=example-com" \
-        "ParameterKey=StatusCheckerConfiguration,ParameterValue=${configuration}"
-```
+https://github.com/frodeaa/status-checker/blob/05b5ff7a9fef16c6892ff7abe4fdbc2ea700a218/cloudformation/create-status-checker-configuration-stack.sh#L3-L18
 
 > The default schedule is every 5 minutes. It can be changed by using the
 > `StatusCheckerScheduleExpression` parameter.
