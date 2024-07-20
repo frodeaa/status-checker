@@ -1,7 +1,12 @@
 import { CloudWatch } from "@aws-sdk/client-cloudwatch";
 import { SSM } from "@aws-sdk/client-ssm";
 import type { Context } from "aws-lambda";
-import nock from "nock";
+import {
+    Agent,
+    MockAgent,
+    setGlobalDispatcher,
+    fetch as undiciFetch,
+} from "undici";
 import * as handler from "../src/handler";
 
 jest.mock("@aws-sdk/client-cloudwatch", () => {
@@ -20,13 +25,19 @@ jest.mock("@aws-sdk/client-ssm", () => {
     return { SSM: SSMMock };
 });
 
+const mockAgent = new MockAgent({ connections: 1 });
+const originalFetch = global.fetch;
+
 beforeAll(() => {
-    nock.disableNetConnect();
+    mockAgent.disableNetConnect();
+    setGlobalDispatcher(mockAgent);
+    global.fetch = undiciFetch as unknown as typeof fetch;
 });
 
-afterAll(() => {
-    nock.cleanAll();
-    nock.enableNetConnect();
+afterAll(async () => {
+    await mockAgent.close();
+    setGlobalDispatcher(new Agent());
+    global.fetch = originalFetch;
 });
 
 afterEach(() => {
@@ -59,14 +70,14 @@ describe(handler.check.name, () => {
             process.env.NODE_ENV = "test";
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             require("../src/handler").log();
-            expect(console.log).not.toBeCalled();
+            expect(console.log).not.toHaveBeenCalled();
         });
 
         test("logging in production", () => {
             process.env.NODE_ENV = "production";
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             require("../src/handler").log();
-            expect(console.log).toBeCalled();
+            expect(console.log).toHaveBeenCalled();
         });
     });
 
@@ -218,7 +229,7 @@ describe(handler.check.name, () => {
             cloudwatch.putMetricData.mockResolvedValueOnce(1);
             const response = await handler.putMetricData(output);
             expect(response).toEqual(1);
-            expect(cloudwatch.putMetricData).toBeCalledWith(
+            expect(cloudwatch.putMetricData).toHaveBeenCalledWith(
                 handler.asMetricData(output),
             );
         });
@@ -234,7 +245,11 @@ describe(handler.check.name, () => {
         const url = "http://localhost";
 
         test("get", async () => {
-            nock(url).get("/").reply(200, "");
+            mockAgent
+                .get(url)
+                .intercept({ method: "GET", path: "/" })
+                .reply(200, "");
+
             const response = await handler.checkEndpoint({ url });
             expect(response).toMatchObject({
                 endpoint: "http://localhost",
@@ -245,7 +260,11 @@ describe(handler.check.name, () => {
         });
 
         test("post", async () => {
-            nock(url).post("/").reply(200, "");
+            mockAgent
+                .get(url)
+                .intercept({ method: "POST", path: "/" })
+                .reply(200, "");
+
             const response = await handler.checkEndpoint({
                 url,
                 method: "POST",
@@ -259,14 +278,18 @@ describe(handler.check.name, () => {
         });
 
         test("error", async () => {
-            nock(url).post("/").replyWithError("");
+            mockAgent
+                .get(url)
+                .intercept({ method: "POST", path: "/" })
+                .replyWithError(new Error(""));
+
             const response = await handler.checkEndpoint({
                 url,
                 method: "POST",
             });
             expect(response).toMatchObject({
                 endpoint: "http://localhost",
-                error_code: "FetchError",
+                error_code: "TypeError",
                 method: "POST",
                 status_code: 0,
             });
@@ -274,7 +297,12 @@ describe(handler.check.name, () => {
         });
 
         test("timeout", async () => {
-            nock(url).get("/").delayConnection(200).reply(200, "");
+            mockAgent
+                .get(url)
+                .intercept({ method: "GET", path: "/" })
+                .reply(200, "")
+                .delay(200);
+
             const response = await handler.checkEndpoint(
                 {
                     url,
@@ -310,7 +338,7 @@ describe(handler.check.name, () => {
                     url: "http://example.com",
                 },
             ]);
-            expect(ssm.getParameter).toBeCalledWith({
+            expect(ssm.getParameter).toHaveBeenCalledWith({
                 Name: "example-com",
                 WithDecryption: true,
             });
@@ -319,7 +347,7 @@ describe(handler.check.name, () => {
         test("error", async () => {
             ssm.getParameter.mockRejectedValue(new Error());
             expect(await handler.endpointsFromSsm("example-com")).toEqual([]);
-            expect(ssm.getParameter).toBeCalled();
+            expect(ssm.getParameter).toHaveBeenCalled();
         });
     });
 
@@ -341,7 +369,7 @@ describe(handler.check.name, () => {
             await handler.endpointsFromParameter("example-com", cache);
             await handler.endpointsFromParameter("example-com", cache);
 
-            expect(ssm.getParameter).toBeCalledTimes(1);
+            expect(ssm.getParameter).toHaveBeenCalledTimes(1);
             expect(cache).toEqual({
                 "example-com": [
                     {
@@ -374,14 +402,29 @@ describe(handler.check.name, () => {
         const ctx = {} as unknown as Context;
 
         test("create cloudwatch metric", async () => {
-            nock("http://example.com").get("/").reply(200, "");
+            mockAgent
+                .get("http://example.com")
+                .intercept({ method: "GET", path: "/" })
+                .reply(200, "");
+
             const cb = jest.fn();
 
             await handler.check({ parameter: "example-com" }, ctx, cb);
 
-            expect(cb).not.toBeCalled();
-            expect(cloudwatch.putMetricData).toBeCalledWith(
-                expect.objectContaining({ Namespace: "status-checker/HTTP" }),
+            expect(cb).not.toHaveBeenCalled();
+            expect(cloudwatch.putMetricData).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    Namespace: "status-checker/HTTP",
+                    MetricData: expect.arrayContaining([
+                        expect.objectContaining({
+                            MetricName: "HTTPCode",
+                            StatisticValues: expect.objectContaining({
+                                SampleCount: 1,
+                                Sum: 200,
+                            }),
+                        }),
+                    ]),
+                }),
             );
         });
     });

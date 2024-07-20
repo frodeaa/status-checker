@@ -1,15 +1,14 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
-        "lib": ["es2023"],
-        "module": "node16",
-        "target": "es2022",
-        "outDir": "dist",
+        "target": "es2020",
+        "module": "commonjs",
+        "outDir": "./dist",
         "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "moduleResolution": "node16",
-        "types": ["node", "jest"]
+        "baseUrl": "./",
+        "types": ["jest", "node"],
+        "noUnusedLocals": true,
+        "skipLibCheck": true
     },
-    "include": ["src/**/*", "test/**/*"]
+    "include": ["src/**/*.ts"]
 }
