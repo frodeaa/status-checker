@@ -9,32 +9,13 @@ export AWS_ENDPOINT_URL=http://localhost:4566
 export BUCKET=status-checker-cnf-templates
 
 printf "test %s\n" cloudformation/status-checker-template.yml
+cloudformation/create-status-checker-stack.sh
 
-aws cloudformation package \
-    --template-file cloudformation/status-checker-template.yml \
-    --output-template-file /tmp/deploy-status-checker-template.yml \
-    --s3-bucket "${BUCKET}"
-
-aws cloudformation deploy \
-    --capabilities CAPABILITY_IAM \
-    --template-file /tmp/deploy-status-checker-template.yml \
-    --stack-name status-checker
-
-configuration=$(cat <<EOF | base64
-[
-  {
-    "url": "http://localstack:5466/"
-  }
-]
-EOF
-)
+printf "delete stack %s\n" status-checker
+aws cloudformation delete-stack --stack-name status-checker
 
 printf "test %s\n" cloudformation/status-checker-configuration-template.yml
+cloudformation/create-status-checker-configuration-stack.sh
 
-aws cloudformation create-stack \
-    --stack-name status-checker-example-com-$RANDOM \
-    --template-body file://cloudformation/status-checker-configuration-template.yml \
-    --parameters \
-        "ParameterKey=StatusCheckerStackName,ParameterValue=status-checker" \
-        "ParameterKey=StatusCheckerName,ParameterValue=example-com" \
-        "ParameterKey=StatusCheckerConfiguration,ParameterValue=${configuration}"
+printf "delete stack %s\n" status-checker-example-com
+aws cloudformation delete-stack --stack-name status-checker-example-com
