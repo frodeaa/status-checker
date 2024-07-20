@@ -10,13 +10,15 @@
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
         "lint": "biome check",
-        "test": "jest"
+        "test": "jest --testPathIgnorePatterns=\"end-to-end-test\"",
+        "end-to-end-tests": "jest --testMatch=\"**/end-to-end-tests/**/*.test.ts\""
     },
     "dependencies": {},
     "devDependencies": {
         "@aws-sdk/client-cloudwatch": "3.616.0",
+        "@aws-sdk/client-lambda": "3.616.0",
         "@aws-sdk/client-ssm": "3.616.0",
-        "@biomejs/biome": "^1.8.3",
+        "@biomejs/biome": "1.8.3",
         "@types/aws-lambda": "8.10.141",
         "@types/jest": "29.5.12",
         "@types/node": "20.14.11",

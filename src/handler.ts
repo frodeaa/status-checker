@@ -21,8 +21,13 @@ export type Output = {
     duration_ms: number;
 };
 
-const ssm = new SSM();
-const cloudwatch = new CloudWatch();
+const ssm = new SSM({
+    endpoint: process.env.AWS_ENDPOINT_URL,
+});
+
+const cloudwatch = new CloudWatch({
+    endpoint: process.env.AWS_ENDPOINT_URL,
+});
 
 export const log = process.env.NODE_ENV === "test" ? () => {} : console.log;
 
