@@ -15,7 +15,7 @@ services:
       test: 'curl --silent --fail localstack:4566/_localstack/init/ready | grep "completed\": true"'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./end-to-end-tests/localstack:/etc/localstack/init/ready.d
+      - ./e2e/localstack:/etc/localstack/init/ready.d
 
   status-checker:
     image: public.ecr.aws/lambda/nodejs:20
