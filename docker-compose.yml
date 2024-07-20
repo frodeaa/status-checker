@@ -2,7 +2,6 @@ services:
   localstack:
     image: localstack/localstack:3.4.0
     environment:
-      - SERVICES=cloudwatch,events,ssm
       - AWS_DEFAULT_REGION=eu-west-1
       - LOCALSTACK_HOST=localstack
       - LS_LOG=warning
@@ -15,6 +14,7 @@ services:
       timeout: 10s
       test: 'curl --silent --fail localstack:4566/_localstack/init/ready | grep "completed\": true"'
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./end-to-end-tests/localstack:/etc/localstack/init/ready.d
 
   status-checker:

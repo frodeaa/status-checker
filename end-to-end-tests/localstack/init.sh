@@ -13,3 +13,5 @@ awslocal ssm put-parameter \
   --name /status-checker/localstack-init-ready \
   --value "$configuration" \
   --type String
+
+awslocal s3 mb s3://status-checker-cnf-templates

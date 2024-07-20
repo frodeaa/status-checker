@@ -27,4 +27,7 @@ $(COMPOSE_COMMANDS):
 end-to-end-tests: build up
 	$(YARN) run $@
 
+end-to-end-tests/create-stacks: build up
+	./$@.sh
+
 .PHONY: $(COMPOSE_COMMANDS) $(YARN_SCRIPTS) end-to-end-tests
