@@ -7,7 +7,7 @@ endpoints
 The result is saved to AWS CloudWatch, where you can use
 the result to trigger other events.
 
-![Cloudwatch example](images/aws-console.png)
+![Cloudwatch example](.images/aws-console.png)
 
 Following metrics are pushed to AWS CloudWatch using
 namespace `status-checker/HTTP` and dimension `Endpoint`
@@ -42,13 +42,13 @@ with following properties.
 
 The application can be deployed with aws cloudformation.
 
-https://github.com/frodeaa/status-checker/blob/05b5ff7a9fef16c6892ff7abe4fdbc2ea700a218/cloudformation/create-status-checker-stack.sh#L3-L11
+https://github.com/frodeaa/status-checker/blob/b1e69d419767b323e779bf6b34b3fc8ce9eece08/e2e/scripts/create-status-checker-stack.sh#L3-L11
 
 #### Configure status checker
 
 Setup the status checker for an URL by creating a configuration stack
 
-https://github.com/frodeaa/status-checker/blob/05b5ff7a9fef16c6892ff7abe4fdbc2ea700a218/cloudformation/create-status-checker-configuration-stack.sh#L3-L18
+https://github.com/frodeaa/status-checker/blob/b1e69d419767b323e779bf6b34b3fc8ce9eece08/e2e/scripts/create-status-checker-configuration-stack.sh#L2-L18
 
 > The default schedule is every 5 minutes. It can be changed by using the
 > `StatusCheckerScheduleExpression` parameter.
