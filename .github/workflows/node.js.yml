@@ -15,8 +15,4 @@ jobs:
         with:
           node-version: "lts/*"
           cache: yarn
-      - run: |
-          yarn install
-          yarn build
-          yarn lint
-          yarn test --coverage
+      - run: make build lint test down end-to-end-tests
