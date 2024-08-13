@@ -16,9 +16,9 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "@aws-sdk/client-cloudwatch": "3.616.0",
-        "@aws-sdk/client-lambda": "3.616.0",
-        "@aws-sdk/client-ssm": "3.616.0",
+        "@aws-sdk/client-cloudwatch": "3.629.0",
+        "@aws-sdk/client-lambda": "3.629.0",
+        "@aws-sdk/client-ssm": "3.629.0",
         "@biomejs/biome": "1.8.3",
         "@types/aws-lambda": "8.10.141",
         "@types/jest": "29.5.12",
